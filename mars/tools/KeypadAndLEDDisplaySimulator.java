@@ -50,9 +50,9 @@ public class KeypadAndLEDDisplaySimulator extends AbstractMarsToolAndApplication
 
 	static final long serialVersionUID = 1; /* To eliminate a warning about serializability. */
 
-	private static String version = "Version 1.2 64x64";
+	private static String version = "Version 1.3 64x64";
 	private static String title = "Keypad and LED Display MMIO Simulator";
-	private static String heading = "Click this window and use arrow keys and Z, X, C, B!";
+	private static String heading = "Click this window and use keypad";
 	private static final int N_COLUMNS = 64;
 	private static final int N_ROWS = 64;
 	private static final int SCREEN_UPDATE = Memory.memoryMapBaseAddress;
@@ -69,6 +69,7 @@ public class KeypadAndLEDDisplaySimulator extends AbstractMarsToolAndApplication
 	private LEDDisplayPanel displayPanel;
 	private int keyState;
 
+	//default
 	private static final int KEY_U = 1;
 	private static final int KEY_D = 2;
 	private static final int KEY_L = 4;
@@ -77,6 +78,43 @@ public class KeypadAndLEDDisplaySimulator extends AbstractMarsToolAndApplication
 	private static final int KEY_Z = 32;
 	private static final int KEY_X = 64;
 	private static final int KEY_C = 128;
+
+	//top of keypad
+	private static final int KEY_1 = 256;
+	private static final int KEY_2 = 512;
+	private static final int KEY_3 = 1024;
+	private static final int KEY_4 = 2048;
+	private static final int KEY_Q = 4096;
+	private static final int KEY_W = 8192;
+	private static final int KEY_E = 16384;
+	//yes i am aware this is a terrible variable name. sue me.
+	private static final int KEY_R1 = 32768;
+
+	//bottom of keypad
+	private static final int KEY_A = 65536;
+	private static final int KEY_S = 131072;
+	private static final int KEY_D1 = 262144;
+	private static final int KEY_F = 524288;
+	private static final int KEY_V = 1048576;
+
+
+	//CH - So basically, I need a 16 key keypad for a personal project. To achieve this, I'm adding bindings for the
+	// following keys
+	/*
+	 ┌─┬─┬─┬─┐
+	 │1│2│3│4│
+	 ├─┼─┼─┼─┤
+	 │q│w│e│r│
+	 ├─┼─┼─┼─┤
+	 │a│s│d│f│
+	 ├─┼─┼─┼─┤
+	 │z│x│c│v│
+	 └─┴─┴─┴─┘
+	 */
+	//you might notice the bottom row of keys is a duplicate of the default keys. To avoid ambiguity, they use the same
+	//actionmapper value, but are simply written at a different location in memory to allow writing the entire keypad
+	//easier
+
 
 	public KeypadAndLEDDisplaySimulator(String title, String heading)
 	{
@@ -135,6 +173,9 @@ public class KeypadAndLEDDisplaySimulator extends AbstractMarsToolAndApplication
 
 		/* This is so hacky and verbose. I don't know of a better way. */
 		// JB: I feel you, Jose. "Verbose" is the best adjective for Java.
+		// CH: you were both right. I was a fool. Existence is pain.
+
+		//default binds
 		InputMap map = panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT,  0, false), "LeftKeyPressed"   );
 		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0, false), "RightKeyPressed"  );
@@ -153,7 +194,42 @@ public class KeypadAndLEDDisplaySimulator extends AbstractMarsToolAndApplication
 		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_X,     0, true ), "XKeyReleased"     );
 		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_C,     0, true ), "CKeyReleased"     );
 
+		//top of keypad
+		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_1,  0, false), "1KeyPressed"         );
+		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_2, 0, false), "2KeyPressed"          );
+		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_3,    0, false), "3KeyPressed"       );
+		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_4,  0, false), "4KeyPressed"         );
+		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_Q,     0, false), "QKeyPressed"      );
+		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_W,     0, false), "WKeyPressed"      );
+		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_E,     0, false), "EKeyPressed"      );
+		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_R,     0, false), "RKeyPressed"      );
+		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_1,  0, true), "1KeyReleased"         );
+		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_2, 0, true), "2KeyReleased"          );
+		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_3,    0, true), "3KeyReleased"       );
+		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_4,  0, true), "4KeyReleased"         );
+		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_Q,     0, true), "QKeyReleased"      );
+		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_W,     0, true), "WKeyReleased"      );
+		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_E,     0, true), "EKeyReleased"      );
+		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_R,     0, true), "RKeyReleased"      );
+
+		//bottom of keypad
+		//some weridness here: since z x and c are bound in default bindings, we dont want to duplicate them here
+		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_A,  0, false), "AKeyPressed"         );
+		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, 0, false), "SKeyPressed"          );
+		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_D,    0, false), "DKeyPressed"       );
+		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_F,  0, false), "FKeyPressed"         );
+		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_V,     0, false), "VKeyPressed"      );
+
+		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_A,  0, true), "AKeyReleased"         );
+		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, 0, true), "SKeyReleased"          );
+		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_D,    0, true), "DKeyReleased"       );
+		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_F,  0, true), "FKeyReleased"         );
+		map.put(KeyStroke.getKeyStroke(KeyEvent.VK_V,     0, true), "VKeyReleased"      );
+
+
 		ActionMap actions = panel.getActionMap();
+
+		//default binds
 		actions.put("LeftKeyPressed",    new AbstractAction() {
 			public void actionPerformed(ActionEvent e) { changeKeyState(keyState | KEY_L);  } });
 		actions.put("RightKeyPressed",   new AbstractAction() {
@@ -186,6 +262,64 @@ public class KeypadAndLEDDisplaySimulator extends AbstractMarsToolAndApplication
 			public void actionPerformed(ActionEvent e) { changeKeyState(keyState & ~KEY_X); } });
 		actions.put("CKeyReleased",      new AbstractAction() {
 			public void actionPerformed(ActionEvent e) { changeKeyState(keyState & ~KEY_C); } });
+
+
+		//top of keypad
+		actions.put("1KeyPressed",    new AbstractAction() {
+			public void actionPerformed(ActionEvent e) { changeKeyState(keyState | KEY_1);  } });
+		actions.put("2KeyPressed",   new AbstractAction() {
+			public void actionPerformed(ActionEvent e) { changeKeyState(keyState | KEY_2);  } });
+		actions.put("3KeyPressed",      new AbstractAction() {
+			public void actionPerformed(ActionEvent e) { changeKeyState(keyState | KEY_3);  } });
+		actions.put("4KeyPressed",    new AbstractAction() {
+			public void actionPerformed(ActionEvent e) { changeKeyState(keyState | KEY_4);  } });
+		actions.put("QKeyPressed",       new AbstractAction() {
+			public void actionPerformed(ActionEvent e) { changeKeyState(keyState | KEY_Q);  } });
+		actions.put("WKeyPressed",       new AbstractAction() {
+			public void actionPerformed(ActionEvent e) { changeKeyState(keyState | KEY_W);  } });
+		actions.put("EKeyPressed",       new AbstractAction() {
+			public void actionPerformed(ActionEvent e) { changeKeyState(keyState | KEY_E);  } });
+		actions.put("RKeyPressed",       new AbstractAction() {
+			public void actionPerformed(ActionEvent e) { changeKeyState(keyState | KEY_R1);  } });
+		actions.put("1KeyReleased",   new AbstractAction() {
+			public void actionPerformed(ActionEvent e) { changeKeyState(keyState & ~KEY_1); } });
+		actions.put("2KeyReleased",  new AbstractAction() {
+			public void actionPerformed(ActionEvent e) { changeKeyState(keyState & ~KEY_2); } });
+		actions.put("3KeyReleased",     new AbstractAction() {
+			public void actionPerformed(ActionEvent e) { changeKeyState(keyState & ~KEY_3); } });
+		actions.put("4KeyReleased",   new AbstractAction() {
+			public void actionPerformed(ActionEvent e) { changeKeyState(keyState & ~KEY_4); } });
+		actions.put("QKeyReleased",      new AbstractAction() {
+			public void actionPerformed(ActionEvent e) { changeKeyState(keyState & ~KEY_Q); } });
+		actions.put("WKeyReleased",      new AbstractAction() {
+			public void actionPerformed(ActionEvent e) { changeKeyState(keyState & ~KEY_W); } });
+		actions.put("EKeyReleased",      new AbstractAction() {
+			public void actionPerformed(ActionEvent e) { changeKeyState(keyState & ~KEY_E); } });
+		actions.put("RKeyReleased",      new AbstractAction() {
+			public void actionPerformed(ActionEvent e) { changeKeyState(keyState & ~KEY_R1); } });
+
+		//bottom of keypad
+		actions.put("AKeyPressed",    new AbstractAction() {
+			public void actionPerformed(ActionEvent e) { changeKeyState(keyState | KEY_A);  } });
+		actions.put("SKeyPressed",   new AbstractAction() {
+			public void actionPerformed(ActionEvent e) { changeKeyState(keyState | KEY_S);  } });
+		actions.put("DKeyPressed",      new AbstractAction() {
+			public void actionPerformed(ActionEvent e) { changeKeyState(keyState | KEY_D1);  } });
+		actions.put("FKeyPressed",    new AbstractAction() {
+			public void actionPerformed(ActionEvent e) { changeKeyState(keyState | KEY_F);  } });
+		actions.put("VKeyPressed",       new AbstractAction() {
+			public void actionPerformed(ActionEvent e) { changeKeyState(keyState | KEY_V);  } });
+		actions.put("AKeyReleased",   new AbstractAction() {
+			public void actionPerformed(ActionEvent e) { changeKeyState(keyState & ~KEY_A); } });
+		actions.put("SKeyReleased",  new AbstractAction() {
+			public void actionPerformed(ActionEvent e) { changeKeyState(keyState & ~KEY_S); } });
+		actions.put("DKeyReleased",     new AbstractAction() {
+			public void actionPerformed(ActionEvent e) { changeKeyState(keyState & ~KEY_D1); } });
+		actions.put("FKeyReleased",   new AbstractAction() {
+			public void actionPerformed(ActionEvent e) { changeKeyState(keyState & ~KEY_F); } });
+		actions.put("VKeyReleased",      new AbstractAction() {
+			public void actionPerformed(ActionEvent e) { changeKeyState(keyState & ~KEY_V); } });
+
 
 		return panel;
 	}
