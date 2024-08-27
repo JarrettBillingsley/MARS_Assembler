@@ -232,22 +232,22 @@ mul $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	mul RG1, RG2, $1	#MULtiplicatio
 mulu $t1,$t2,$t3	multu RG2, RG3	mflo RG1	#MULtiplication Unsigned : Set HI to high-order 32 bits, LO and $t1 to low-order 32 bits of ($t2 multiplied by $t3, unsigned multiplication)
 mulu $t1,$t2,-100	addi $1, $0, VL3	multu RG2, $1	mflo RG1	#MULtiplication Unsigned :  Set HI to high-order 32 bits, LO and $t1 to low-order 32 bits of ($t2 multiplied by 16-bit immediate, unsigned multiplication)
 mulu $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	multu RG2, $1	mflo RG1	#MULtiplication Unsigned :  Set HI to high-order 32 bits, LO and $t1 to low-order 32 bits of ($t2 multiplied by 32-bit immediate, unsigned multiplication)
-mulo $t1,$t2,$t3	mult RG2, RG3	mfhi $1	mflo RG1	sra RG1, RG1, 31	beq $1, RG1, BROFF12	DBNOP	teq $0, $0	mflo RG1	#MULtiplication with Overflow : Set $t1 to low-order 32 bits of the product of $t2 and $t3
-mulo $t1,$t2,-100	addi $1, $0, VL3	mult RG2, $1	mfhi $1	mflo RG1	sra RG1, RG1, 31	beq $1, RG1, BROFF12	DBNOP	teq $0, $0	mflo RG1	#MULtiplication with Overflow : Set $t1 to low-order 32 bits of the product of $t2 and signed 16-bit immediate
-mulo $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	mult RG2, $1	mfhi $1	mflo RG1	sra RG1, RG1, 31	beq $1, RG1, BROFF12	DBNOP	teq $0, $0	mflo RG1	#MULtiplication with Overflow : Set $t1 to low-order 32 bits of the product of $t2 and 32-bit immediate
-mulou $t1,$t2,$t3	multu RG2, RG3	mfhi $1	beq $1,$0, BROFF12	DBNOP	teq $0, $0	mflo RG1	#MULtiplication with Overflow Unsigned : Set $t1 to low-order 32 bits of the product of $t2 and $t3
-mulou $t1,$t2,-100	addi $1, $0, VL3	multu RG2, $1	mfhi $1	beq $1,$0, BROFF12	DBNOP	teq $0, $0	mflo RG1	#MULtiplication with Overflow Unsigned : Set $t1 to low-order 32 bits of the product of $t2 and signed 16-bit immediate
-mulou $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	multu RG2, $1	mfhi $1	beq $1,$0, BROFF12	DBNOP	teq $0, $0	mflo RG1	#MULtiplication with Overflow Unsigned : Set $t1 to low-order 32 bits of the product of $t2 and 32-bit immediate
-div $t1,$t2,$t3	bne RG3, $0, BROFF12	DBNOP	teq $0, $0	div RG2, RG3	mflo RG1	#DIVision : Set $t1 to ($t2 divided by $t3, integer division)
+mulo $t1,$t2,$t3	mult RG2, RG3	mfhi $1	mflo RG1	sra RG1, RG1, 31	tne $1, RG1	mflo RG1	#MULtiplication with Overflow : Set $t1 to low-order 32 bits of the product of $t2 and $t3
+mulo $t1,$t2,-100	addi $1, $0, VL3	mult RG2, $1	mfhi $1	mflo RG1	sra RG1, RG1, 31	tne $1, RG1	mflo RG1	#MULtiplication with Overflow : Set $t1 to low-order 32 bits of the product of $t2 and signed 16-bit immediate
+mulo $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	mult RG2, $1	mfhi $1	mflo RG1	sra RG1, RG1, 31	tne $1, RG1	mflo RG1	#MULtiplication with Overflow : Set $t1 to low-order 32 bits of the product of $t2 and 32-bit immediate
+mulou $t1,$t2,$t3	multu RG2, RG3	mfhi $1	tne $1,$0	mflo RG1	#MULtiplication with Overflow Unsigned : Set $t1 to low-order 32 bits of the product of $t2 and $t3
+mulou $t1,$t2,-100	addi $1, $0, VL3	multu RG2, $1	mfhi $1	tne $1,$0	mflo RG1	#MULtiplication with Overflow Unsigned : Set $t1 to low-order 32 bits of the product of $t2 and signed 16-bit immediate
+mulou $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	multu RG2, $1	mfhi $1	tne $1,$0	mflo RG1	#MULtiplication with Overflow Unsigned : Set $t1 to low-order 32 bits of the product of $t2 and 32-bit immediate
+div $t1,$t2,$t3	teq RG3, $0	div RG2, RG3	mflo RG1	#DIVision : Set $t1 to ($t2 divided by $t3, integer division)
 div $t1,$t2,-100	addi $1, $0, VL3	div RG2, $1	mflo RG1	#DIVision : Set $t1 to ($t2 divided by 16-bit immediate, integer division)
 div $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	div RG2, $1	mflo RG1	#DIVision : Set $t1 to ($t2 divided by 32-bit immediate, integer division)
-divu $t1,$t2,$t3	bne RG3, $0, BROFF12	DBNOP	teq $0, $0	divu RG2, RG3	mflo RG1	#DIVision Unsigned :  Set $t1 to ($t2 divided by $t3, unsigned integer division)
+divu $t1,$t2,$t3	teq RG3, $0	divu RG2, RG3	mflo RG1	#DIVision Unsigned :  Set $t1 to ($t2 divided by $t3, unsigned integer division)
 divu $t1,$t2,-100	addi $1, $0, VL3	divu RG2, $1	mflo RG1	#DIVision Unsigned :  Set $t1 to ($t2 divided by 16-bit immediate, unsigned integer division)
 divu $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	divu RG2, $1	mflo RG1	#DIVision Unsigned :  Set $t1 to ($t2 divided by 32-bit immediate, unsigned integer division)
-rem $t1,$t2,$t3	bne RG3, $0, BROFF12	DBNOP	teq $0, $0	div RG2, RG3	mfhi RG1	#REMainder : Set $t1 to (remainder of $t2 divided by $t3)
+rem $t1,$t2,$t3	teq RG3, $0	div RG2, RG3	mfhi RG1	#REMainder : Set $t1 to (remainder of $t2 divided by $t3)
 rem $t1,$t2,-100	addi $1, $0, VL3	div RG2, $1	mfhi RG1	#REMainder : Set $t1 to (remainder of $t2 divided by 16-bit immediate)
 rem $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	div RG2, $1	mfhi RG1	#REMainder : Set $t1 to (remainder of $t2 divided by 32-bit immediate)
-remu $t1,$t2,$t3	bne RG3, $0, BROFF12	DBNOP	teq $0, $0	divu RG2, RG3	mfhi RG1	#REMainder : Set $t1 to (remainder of $t2 divided by $t3, unsigned division)
+remu $t1,$t2,$t3	teq RG3, $0	divu RG2, RG3	mfhi RG1	#REMainder : Set $t1 to (remainder of $t2 divided by $t3, unsigned division)
 remu $t1,$t2,-100	addi $1, $0, VL3	divu RG2, $1	mfhi RG1	#REMainder : Set $t1 to (remainder of $t2 divided by 16-bit immediate, unsigned division)
 remu $t1,$t2,100000	lui $1, VHL3	ori $1, $1, VL3U	divu RG2, $1	mfhi RG1	#REMainder : Set $t1 to (remainder of $t2 divided by 32-bit immediate, unsigned division)
 
